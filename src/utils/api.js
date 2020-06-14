@@ -9,7 +9,7 @@ axios.interceptors.response.use(success => {
     return success.data;
 }, error => {
 
-    if (error.response.status == 504 || error.response.status==404) {
+    if (error.response.status == 504 || error.response.status == 404) {
         Message.error({message: "服务器被吃了"})
     } else if (error.response.status == 403) {
         Message.error({message: "权限不足，请联系管理员！"})
@@ -46,5 +46,38 @@ export const postKeyValueRequest = (url, params) => {
             'Content-Type': 'application/x-www-form-urlencoded'
         }
     });
+}
+
+export const postRequest = (url, params) => {
+    return axios({
+        method: 'post',
+        url: `${base}${url}`,
+        data: params
+    });
+
+}
+export const putRequest = (url, params) => {
+    return axios({
+        method: 'put',
+        url: `${base}${url}`,
+        data: params
+    });
+
+}
+export const getRequest = (url, params) => {
+    return axios({
+        method: 'get',
+        url: `${base}${url}`,
+        data: params
+    });
+
+}
+export const deleteRequest = (url, params) => {
+    return axios({
+        method: 'delete',
+        url: `${base}${url}`,
+        data: params
+    });
+
 }
 
