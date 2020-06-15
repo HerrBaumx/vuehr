@@ -40,12 +40,12 @@
                     if (valid) {
                         this.postKeyValueRequest("/doLogin",this.loginForm).then(resp=>{
                             if(resp){
-                                alert(JSON.stringify(resp))
+                                // alert(JSON.stringify(resp))
                                 window.sessionStorage.setItem("user", JSON.stringify(resp.obj));
                                 this.$router.replace("/home");
                             }
                         })
-                        alert('submit!');
+                        // alert('submit!');
                     } else {
                         this.$message.error('请输入所有字段');
                         return false;
