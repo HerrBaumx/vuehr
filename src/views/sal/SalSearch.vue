@@ -1,5 +1,7 @@
 <template>
-    工资表查询
+    <div>
+        工资表查询
+    </div>
 </template>
 
 <script>

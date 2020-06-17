@@ -1,9 +1,8 @@
 <template>
-    <dvi>
+    <div>
         人事记录统计
-    </dvi>
+    </div>
 </template>
-
 <script>
     export default {
         name: "StaRecord"

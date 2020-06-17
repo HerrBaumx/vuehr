@@ -1,7 +1,7 @@
 <template>
-    <dvi>
+    <div>
         人事信息统计
-    </dvi>
+    </div>
 </template>
 
 <script>
