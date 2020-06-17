@@ -23,7 +23,9 @@
                                 <span>{{item.name}}</span>
                             </template>
 
-                            <el-menu-item :index="child.path" v-for="(child,indexj) in item.children" :key="indexj">{{child.name}}</el-menu-item>
+                            <el-menu-item :index="child.path" v-for="(child,indexj) in item.children" :key="indexj">
+                                {{child.name}}
+                            </el-menu-item>
 
 
                         </el-submenu>
@@ -45,8 +47,8 @@
                 user: JSON.parse(window.sessionStorage.getItem("user"))
             }
         },
-        computed:{
-            routes(){
+        computed: {
+            routes() {
                 return this.$store.state.routes;
             }
         },
@@ -60,7 +62,7 @@
                     }).then(() => {
                         this.getRequest("/logout")
                         window.sessionStorage.removeItem("user")
-                        this.$store.commit('initRoutes',[])
+                        this.$store.commit('initRoutes', [])
                         this.$router.replace("/")
                     }).catch(() => {
                         this.$message({
