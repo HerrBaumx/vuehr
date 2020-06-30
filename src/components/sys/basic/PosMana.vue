@@ -15,6 +15,7 @@
             <el-table
                     :data="positions"
                     border
+                    @selection-change="handleSelectionChange"
                     stripe
                     size="small"
                     style="width: 70%">
@@ -52,6 +53,9 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-button type="danger" @click="deleteMany" size="small" style="margin-top: 8px"
+                       :disabled="multipleSelection.length==0">批量删除
+            </el-button>
         </div>
         <el-dialog
                 title="修改职位"
@@ -82,12 +86,42 @@
                 updatePos: {
                     name: ''
                 },
-                positions: []
+                positions: [],
+                multipleSelection: []
             }
         }, mounted() {
             this.initPositions();
         },
         methods: {
+            deleteMany() {
+                this.$confirm('此操作将永久删除【' + this.multipleSelection.length + '】条记录, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    let ids = '?';
+                    this.multipleSelection.forEach(item => {
+                        ids += 'ids=' + item.id + '&';
+                    })
+
+                    this.deleteRequest("/system/basic/pos/" + ids).then(resp=>{
+                        if(resp){
+                            this.initPositions();
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            },
+
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+                console.log(val);
+
+            },
             addPosition() {
                 if (this.pos.name) {
                     this.postRequest("/system/basic/pos/", this.pos).then(resp => {
