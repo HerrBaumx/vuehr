@@ -38,6 +38,15 @@
                         label="创建时间"
                         width="180">
                 </el-table-column>
+                <el-table-column
+
+                        label="是否启用"
+                        width="120">
+                    <template slot-scope="scope">
+                        <el-tag size="small" type="success" v-if="scope.row.enabled">已启用</el-tag>
+                        <el-tag size="small" type="danger" v-else>未启用</el-tag>
+                    </template>
+                </el-table-column>
 
                 <el-table-column label="操作">
                     <template slot-scope="scope">
@@ -63,8 +72,18 @@
                 width="30%">
 
             <div>
-                <el-tag>职位名称</el-tag>
-                <el-input class="updatePosInput" size="small" v-model="updatePos.name"></el-input>
+                <div>
+                    <el-tag>职位名称</el-tag>
+                    <el-input class="updatePosInput" size="small" v-model="updatePos.name"></el-input>
+                </div>
+                <div>
+                    <el-tag>是否启用</el-tag>
+                    <el-switch
+                            v-model="updatePos.enabled"
+                            active-text="启用"
+                            inactive-text="禁用">
+                    </el-switch>
+                </div>
             </div>
             <span slot="footer" class="dialog-footer">
     <el-button size="small" @click="dialogVisible = false">取 消</el-button>
@@ -84,7 +103,8 @@
                 },
                 dialogVisible: false,
                 updatePos: {
-                    name: ''
+                    name: '',
+                    enabled: false
                 },
                 positions: [],
                 multipleSelection: []
@@ -104,8 +124,8 @@
                         ids += 'ids=' + item.id + '&';
                     })
 
-                    this.deleteRequest("/system/basic/pos/" + ids).then(resp=>{
-                        if(resp){
+                    this.deleteRequest("/system/basic/pos/" + ids).then(resp => {
+                        if (resp) {
                             this.initPositions();
                         }
                     })
