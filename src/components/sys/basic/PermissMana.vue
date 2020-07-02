@@ -8,7 +8,7 @@
             <el-button size="small" type="primary" icon="el-icon-plus">添加角色</el-button>
         </div>
         <div class="permissManaMain">
-            <el-collapse accordion @change="change">
+            <el-collapse v-model="activeName" accordion @change="change">
                 <el-collapse-item :title="r.nameZh" :name="r.id" v-for="(r,index) in roles " :key="index">
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
@@ -17,7 +17,15 @@
                                        type="text"></el-button>
                         </div>
                         <div>
-                            <el-tree show-checkbox :data="allmenus" :props="defaultProps"></el-tree>
+                            <el-tree show-checkbox
+                                     node-key="id"
+                                     ref="tree"
+                                     :default-checked-keys="selectedMenus"
+                                     :data="allmenus" :props="defaultProps"></el-tree>
+                            <div style="display: flex;justify-content: flex-end">
+                                <el-button @click="cancelUpdate">取消修改</el-button>
+                                <el-button type="primary" @click="doUpdate(r.id,index)">确认修改</el-button>
+                            </div>
                         </div>
                     </el-card>
                 </el-collapse-item>
@@ -37,6 +45,8 @@
                 },
                 allmenus: [],
                 roles: [],
+                activeName: -1,
+                selectedMenus: [],
                 defaultProps: {
                     children: 'children',
                     label: 'name'
@@ -48,10 +58,35 @@
             this.initRole();
         },
         methods: {
-            change(name) {
-                if (name) {
+            cancelUpdate() {
+                this.activeName = -1;
+            },
+            doUpdate(rid, index) {
+                let tree = this.$refs.tree[index];
+                let selectedKeys = tree.getCheckedKeys(true);
+                let url = "/system/basic/permiss/?rid=" + rid;
+                selectedKeys.forEach(key => {
+                    url += "&mids=" + key;
+                });
+                this.putRequest(url).then(resp => {
+                    if (resp) {
+                        this.initRole();
+                        this.activeName = -1;
+                    }
+                });
+            },
+            change(rid) {
+                if (rid) {
                     this.initAllMenus();
+                    this.initSelectedMenus(rid);
                 }
+            },
+            initSelectedMenus(rid) {
+                this.getRequest("/system/basic/permiss/mids/" + rid).then(resp => {
+                    if (resp) {
+                        this.selectedMenus = resp;
+                    }
+                });
             },
             initAllMenus() {
                 this.getRequest("/system/basic/permiss/menus").then(resp => {
