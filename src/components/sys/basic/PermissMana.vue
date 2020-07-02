@@ -15,7 +15,7 @@
                         <div slot="header" class="clearfix">
                             <span>可访问的资源</span>
                             <el-button style="float: right; padding: 3px 0 ;color: #ff0000; " icon="el-icon-delete"
-                                       type="text"></el-button>
+                                       type="text" @click="deleteRole(r)"></el-button>
                         </div>
                         <div>
                             <el-tree show-checkbox
@@ -60,6 +60,24 @@
             this.initRole();
         },
         methods: {
+
+            deleteRole(role) {
+                this.$confirm('此操作将永久删除【'+role.nameZh+'】角色, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.deleteRequest("/system/basic/permiss/role/" + role.id).then(resp => {
+                        this.initRole();
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+            },
             doAddRole() {
 
                 if (this.role.name && this.role.nameZh) {
