@@ -4,8 +4,9 @@
             <el-input size="small" placeholder="请输入角色英文名" v-model="role.name">
                 <template slot="prepend">ROLE_</template>
             </el-input>
-            <el-input size="small" placeholder="请输入角色中文名" v-model="role.nameZh"></el-input>
-            <el-button size="small" type="primary" icon="el-icon-plus">添加角色</el-button>
+            <el-input size="small" placeholder="请输入角色中文名" v-model="role.nameZh"
+                      @keydown.enter.native="doAddRole"></el-input>
+            <el-button size="small" type="primary" icon="el-icon-plus" @click="doAddRole">添加角色</el-button>
         </div>
         <div class="permissManaMain">
             <el-collapse v-model="activeName" accordion @change="change">
@@ -20,6 +21,7 @@
                             <el-tree show-checkbox
                                      node-key="id"
                                      ref="tree"
+                                     :key="index"
                                      :default-checked-keys="selectedMenus"
                                      :data="allmenus" :props="defaultProps"></el-tree>
                             <div style="display: flex;justify-content: flex-end">
@@ -58,6 +60,20 @@
             this.initRole();
         },
         methods: {
+            doAddRole() {
+
+                if (this.role.name && this.role.nameZh) {
+                    this.postRequest("/system/basic/permiss/role", this.role).then(resp => {
+                        if (resp) {
+                            this.role.nameZh = '';
+                            this.role.name = '';
+                            this.initRole();
+                        }
+                    });
+                } else {
+                    this.$message.error("数据不能为空！");
+                }
+            },
             cancelUpdate() {
                 this.activeName = -1;
             },
@@ -70,7 +86,6 @@
                 });
                 this.putRequest(url).then(resp => {
                     if (resp) {
-                        this.initRole();
                         this.activeName = -1;
                     }
                 });
