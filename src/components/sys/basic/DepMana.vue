@@ -9,8 +9,30 @@
         <el-tree
                 :data="deps"
                 :props="defaultProps"
+                :expand-on-click-node="false"
                 :filter-node-method="filterNode"
                 ref="tree">
+            <span class="custom-tree-node" style="display: flex;justify-content: space-between;width: 100%"
+                  slot-scope="{ node, data }">
+
+        <span>{{ data.name }}</span>
+        <span>
+          <el-button
+                  type="primary"
+                  size="mini"
+                  class="depBtn"
+                  @click="() => showAddDepView(data)">
+            添加部门
+          </el-button>
+          <el-button
+                  type="danger"
+                  size="mini"
+                  class="depBtn"
+                  @click="() => deleteDep(data)">
+            删除部门
+          </el-button>
+        </span>
+      </span>
         </el-tree>
     </div>
 </template>
@@ -37,6 +59,14 @@
             this.initDeps();
         },
         methods: {
+            deleteDep(data) {
+                console.log(data);
+            },
+
+
+            showAddDepView(data) {
+                console.log(data);
+            },
             initDeps() {
                 this.getRequest("/system/basic/department/").then(resp => {
                     if (resp) {
@@ -52,6 +82,9 @@
     }
 </script>
 
-<style scoped>
+<style>
+    .depBtn {
+        padding: 2px;
+    }
 
 </style>
