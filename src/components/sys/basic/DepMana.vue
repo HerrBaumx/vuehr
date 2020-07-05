@@ -115,7 +115,7 @@
                 }
             },
             doAddDep() {
-                this.postRequest("/system/basic/department/" ,this.dep).then(resp => {
+                this.postRequest("/system/basic/department/", this.dep).then(resp => {
                     if (resp) {
                         this.addDep2Deps(this.deps, resp.obj);
                         this.dialogVisible = false;
@@ -124,7 +124,25 @@
                 });
             },
             deleteDep(data) {
-                console.log(data);
+                if (data.parent) {
+                    this.$message.error("父部门删除失败！");
+                } else {
+
+                    this.$confirm('此操作将永久删除【'+data.name+'】部门, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        this.deleteRequest("/system/basic/department/" + data.id).then(resp => {
+                            this.removeDepFromDeps(this.deps, data.id);
+                        });
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });
+                    });
+                }
             },
 
 
@@ -143,6 +161,18 @@
             filterNode(value, data) {
                 if (!value) return true;
                 return data.name.indexOf(value) !== -1;
+            },
+            removeDepFromDeps(deps, id) {
+                for (let i = 0; i < deps.length; i++) {
+                    let d = deps[i];
+                    if (d.id == id) {
+                        deps.splice(i, 1);
+                    }else {
+                        this.removeDepFromDeps(d.children, id);
+                    }
+
+                }
+                
             }
         }
     }
