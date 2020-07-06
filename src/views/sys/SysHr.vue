@@ -26,6 +26,7 @@
                                     v-model="hr.enabled"
                                     active-color="#13ce66"
                                     inactive-color="#ff4949"
+                                    @change="enabledChange(hr)"
                                     active-text="启用"
                                     inactive-text="禁用">
                             </el-switch>
@@ -58,6 +59,14 @@
             this.initHrs();
         },
         methods: {
+            enabledChange(hr) {
+                delete hr.roles;
+                this.putRequest("/system/hr/", hr).then(resp => {
+                    if (resp) {
+                        this.initHrs();
+                    }
+                });
+            },
             initHrs() {
                 this.getRequest("/system/hr/").then(resp => {
                     if (resp) {
