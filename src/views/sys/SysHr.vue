@@ -36,7 +36,26 @@
                             <el-tag type="success" style="margin-right: 4px" v-for="(role,indexj) in hr.roles"
                                     :key="indexj">{{role.nameZh}}
                             </el-tag>
-                            <el-button icon="el-icon-more" type="text"></el-button>
+
+                            <el-popover
+                                    placement="right"
+                                    title="角色列表"
+                                    @show="showPop(hr)"
+                                    @hide="hidePop(hr)"
+                                    width="200"
+                                    trigger="click">
+                                <el-select v-model="selectedRoles" multiple placeholder="请选择">
+                                    <el-option
+                                            v-for="(r,indexk) in allroles"
+                                            :key="indexk"
+                                            :label="r.nameZh"
+                                            :value="r.id">
+                                    </el-option>
+                                </el-select>
+                                <el-button slot="reference" icon="el-icon-more" type="text"></el-button>
+                            </el-popover>
+
+
                         </div>
                         <div>备注：{{hr.remark}}</div>
                     </div>
@@ -52,7 +71,10 @@
         data() {
             return {
                 keywords: '',
-                hrs: []
+                hrs: [],
+                allroles: [],
+                selectedRoles: []
+
             }
         },
         mounted() {
@@ -64,6 +86,60 @@
                 this.putRequest("/system/hr/", hr).then(resp => {
                     if (resp) {
                         this.initHrs();
+                    }
+                });
+            },
+            hidePop(hr) {
+
+                let roles = [];
+                Object.assign(roles, hr.roles);
+                let flag = false;
+
+                if (roles.length != this.selectedRoles.length) {
+                    flag = true;
+                } else {
+                    for (let i = 0; i < roles.length; i++) {
+                        let role = roles[i];
+                        for (let j = 0; j < this.selectedRoles.length; j++) {
+                            let sr = this.selectedRoles[j];
+                            if (role.id == sr) {
+                                roles.splice(i, 1);
+                                i--;
+                                break;
+                            }
+
+                        }
+                    }
+                    if (roles.length != 0) {
+                        flag = true;
+                    }
+                }
+
+                if (flag) {
+                    let url = "/system/hr/role?hrid=" + hr.id;
+                    this.selectedRoles.forEach(sr => {
+                        url += '&rids=' + sr;
+                    });
+                    this.putRequest(url).then(resp => {
+                        if (resp) {
+                            this.initHrs();
+                        }
+                    });
+                }
+            },
+            showPop(hr) {
+                this.initAllRoles();
+                let roles = hr.roles;
+                this.selectedRoles = [];
+                roles.forEach(r => {
+                    this.selectedRoles.push(r.id);
+                });
+
+            },
+            initAllRoles() {
+                this.getRequest("/system/hr/roles").then(resp => {
+                    if (resp) {
+                        this.allroles = resp;
                     }
                 });
             },
