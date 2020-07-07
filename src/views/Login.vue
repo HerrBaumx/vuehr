@@ -1,13 +1,20 @@
 <template>
     <div>
-        <el-form :rules="rules" ref="loginForm" :model="loginForm" class="loginContainer">
+        <el-form :rules="rules" ref="loginForm"
+                 v-loading="loading"
+                 element-loading-text="正在登录..."
+                 element-loading-spinner="el-icon-loading"
+                 element-loading-background="rgba(0, 0, 0, 0.8)"
+                 :model="loginForm" class="loginContainer">
             <h3 class="loginTitle">系统登陆</h3>
             <el-form-item prop="username">
-                <el-input size="normal" type="text" v-model="loginForm.username" auto-complete="off" placeholder="请输入用户名">
+                <el-input size="normal" type="text" v-model="loginForm.username" auto-complete="off"
+                          placeholder="请输入用户名">
                 </el-input>
             </el-form-item>
             <el-form-item prop="password">
-                <el-input size="normal" type="password" v-model="loginForm.password" auto-complete="off" placeholder="请输入密码"
+                <el-input size="normal" type="password" v-model="loginForm.password" auto-complete="off"
+                          placeholder="请输入密码"
                           @keydown.enter.native="submitLogin">
                 </el-input>
             </el-form-item>
@@ -23,6 +30,7 @@
         name: "Login",
         data() {
             return {
+                loading: false,
                 loginForm: {
                     username: "admin",
                     password: "123"
@@ -39,7 +47,9 @@
             submitLogin() {
                 this.$refs.loginForm.validate((valid) => {
                     if (valid) {
+                        this.loading = true;
                         this.postKeyValueRequest("/doLogin", this.loginForm).then(resp => {
+                            this.loading = false;
                             if (resp) {
                                 // alert(JSON.stringify(resp))
                                 window.sessionStorage.setItem("user", JSON.stringify(resp.obj));
