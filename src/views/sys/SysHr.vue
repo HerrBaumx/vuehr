@@ -10,7 +10,7 @@
                 <div slot="header" class="clearfix">
                     <span>{{hr.name}}</span>
                     <el-button style="float: right; padding: 3px 0;color: red" type="text"
-                               icon="el-icon-delete"></el-button>
+                               icon="el-icon-delete" @click="deleteHr(hr)"></el-button>
                 </div>
                 <div>
                     <div class="img-container">
@@ -81,7 +81,27 @@
             this.initHrs();
         },
         methods: {
+            deleteHr(hr) {
 
+                this.$confirm('此操作将永久删除【' + hr.name + '】, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.deleteRequest("/system/hr/" + hr.id).then(resp => {
+                        if (resp) {
+                            this.initHrs();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+
+            },
             doSearch() {
                 this.initHrs();
             },
@@ -148,7 +168,7 @@
                 });
             },
             initHrs() {
-                this.getRequest("/system/hr/?keywords="+this.keywords).then(resp => {
+                this.getRequest("/system/hr/?keywords=" + this.keywords).then(resp => {
                     if (resp) {
                         this.hrs = resp;
                     }
