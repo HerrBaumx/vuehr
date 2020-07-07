@@ -2,8 +2,8 @@
     <div>
         <div style="margin-top: 10px;display: flex;justify-content: center">
             <el-input v-model="keywords" placeholder="通过用户名搜索用户..." prefix-icon="el-icon-search"
-                      style="width: 400px;margin-right: 10px"></el-input>
-            <el-button icon="el-icon-search" type="primary">搜索</el-button>
+                      style="width: 400px;margin-right: 10px" @keydown.enter.native="doSearch"></el-input>
+            <el-button icon="el-icon-search" @click="doSearch" type="primary">搜索</el-button>
         </div>
         <div class="hr-container">
             <el-card class="hr-card" v-for="(hr,index) in hrs " :key=index>
@@ -81,6 +81,10 @@
             this.initHrs();
         },
         methods: {
+
+            doSearch() {
+                this.initHrs();
+            },
             enabledChange(hr) {
                 delete hr.roles;
                 this.putRequest("/system/hr/", hr).then(resp => {
@@ -144,7 +148,7 @@
                 });
             },
             initHrs() {
-                this.getRequest("/system/hr/").then(resp => {
+                this.getRequest("/system/hr/?keywords="+this.keywords).then(resp => {
                     if (resp) {
                         this.hrs = resp;
                     }
