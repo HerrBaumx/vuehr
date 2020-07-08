@@ -2,9 +2,13 @@
     <div>
         <div style="display: flex;justify-content: space-between">
             <div>
-                <el-input placeholder="请输入员工姓名进行搜索，可以直接回车搜素..." prefix-icon="el-icon-search"
-                          style="width: 300px;margin-right: 10px"></el-input>
-                <el-button icon="el-icon-search" type="primary">搜素</el-button>
+                <el-input placeholder="请输入员工姓名进行搜索，可以直接回车搜素..."
+                          v-model="keyword" prefix-icon="el-icon-search"
+                          style="width: 300px;margin-right: 10px"
+                          clearable
+                          @clear="initEmps"
+                          @keydown.enter.native="initEmps"></el-input>
+                <el-button icon="el-icon-search" type="primary" @click="initEmps">搜素</el-button>
                 <el-button type="primary">
                     <i class="fa fa-angle-double-down" aria-hidden="true"></i>
                     高级搜素
@@ -201,6 +205,7 @@
             return {
                 emps: [],
                 loading: false,
+                keyword: '',
                 total: 0,
                 page: 1,
                 size: 10
@@ -222,7 +227,7 @@
             },
             initEmps() {
                 this.loading = true;
-                this.getRequest("/emp/basic/?page="+this.page+"&size="+this.size).then(resp => {
+                this.getRequest("/emp/basic/?page=" + this.page + "&size=" + this.size + "&keyword=" + this.keyword).then(resp => {
                     this.loading = false;
 
                     if (resp) {
