@@ -181,7 +181,15 @@
 
 
             </el-table>
-
+            <div style="display: flex;justify-content: flex-end">
+                <el-pagination
+                        background
+                        @size-change="sizeChange"
+                        @current-change="currentChange"
+                        layout="sizes, prev, pager, next, jumper, ->, total, slot"
+                        :total="total">
+                </el-pagination>
+            </div>
         </div>
     </div>
 </template>
@@ -192,20 +200,34 @@
         data() {
             return {
                 emps: [],
-                loading: false
+                loading: false,
+                total: 0,
+                page: 1,
+                size: 10
             };
         },
         mounted() {
             this.initEmps();
         },
         methods: {
+            sizeChange(currentSize) {
+                this.size = currentSize;
+                this.initEmps();
+
+            },
+            currentChange(currentPage) {
+                this.page = currentPage;
+                this.initEmps();
+
+            },
             initEmps() {
                 this.loading = true;
-                this.getRequest("/emp/basic/").then(resp => {
+                this.getRequest("/emp/basic/?page="+this.page+"&size="+this.size).then(resp => {
                     this.loading = false;
 
                     if (resp) {
                         this.emps = resp.data;
+                        this.total = resp.total;
                     }
                 });
             }
