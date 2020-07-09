@@ -128,13 +128,13 @@
                     this.$message.error("父部门删除失败！");
                 } else {
 
-                    this.$confirm('此操作将永久删除【'+data.name+'】部门, 是否继续?', '提示', {
+                    this.$confirm('此操作将永久删除【' + data.name + '】部门, 是否继续?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning'
                     }).then(() => {
                         this.deleteRequest("/system/basic/department/" + data.id).then(resp => {
-                            this.removeDepFromDeps(this.deps, data.id);
+                            this.removeDepFromDeps(null, this.deps, data.id);
                         });
                     }).catch(() => {
                         this.$message({
@@ -162,17 +162,21 @@
                 if (!value) return true;
                 return data.name.indexOf(value) !== -1;
             },
-            removeDepFromDeps(deps, id) {
+            removeDepFromDeps(p, deps, id) {
                 for (let i = 0; i < deps.length; i++) {
                     let d = deps[i];
                     if (d.id == id) {
                         deps.splice(i, 1);
-                    }else {
-                        this.removeDepFromDeps(d.children, id);
+                        if (deps.length == 0) {
+                            p.parent = false;
+                        }
+                        return;
+                    } else {
+                        this.removeDepFromDeps(d, d.children, id);
                     }
 
                 }
-                
+
             }
         }
     }
