@@ -201,7 +201,7 @@
                 width="80%">
             <div>
 
-                <el-form>
+                <el-form :model="emp" :rules="rules" ref="empForm">
                     <el-row>
                         <el-col :span="6">
                             <el-form-item label="姓名:" prop="name">
@@ -313,7 +313,9 @@
                                     <el-tree default-expand-all :data="allDeps" :props="defaultProps"
                                              @node-click="handleNodeClick"></el-tree>
                                     <div slot="reference" style="width: 150px;display: inline-flex;font-size: 13px;border: 1px solid #dedede;
-                                height: 26px;border-radius: 5px;cursor: pointer;align-items: center;padding-left: 8px;box-sizing: border-box" @click="showDepView">{{inputDepName}}</div>
+                                height: 26px;border-radius: 5px;cursor: pointer;align-items: center;padding-left: 8px;box-sizing: border-box"
+                                         @click="showDepView">{{inputDepName}}
+                                    </div>
                                 </el-popover>
 
                             </el-form-item>
@@ -474,7 +476,7 @@
                     email: "laowang@qq.com",
                     phone: "18565558897",
                     address: "深圳市南山区",
-                    departmentId: 5,
+                    departmentId: null,
                     jobLevelId: 9,
                     posId: 29,
                     engageForm: "劳务合同",
@@ -510,6 +512,44 @@
                 defaultProps: {
                     children: 'children',
                     label: 'name'
+                },
+                rules: {
+                    name: [{required: true, message: '请输入用户名！', trigger: 'blur'}],
+                    gender: [{required: true, message: '请输入性别！', trigger: 'blur'}],
+                    birthday: [{required: true, message: '请输入出生日期！', trigger: 'blur'}],
+                    idCard: [{required: true, message: '请输入身份证号码！', trigger: 'blur'},{
+                        pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/,
+                        message: '身份证号码格式不正确',
+                        trigger: 'blur'
+                    }],
+                    wedlock: [{required: true, message: '请输入婚姻状况！', trigger: 'blur'}],
+                    nationId: [{required: true, message: '请输入民族！', trigger: 'blur'}],
+                    nativePlace: [{required: true, message: '请输入籍贯！', trigger: 'blur'}],
+                    politicId: [{required: true, message: '请输入政治面貌！', trigger: 'blur'}],
+                    email: [{required: true, message: '请输入邮箱！', trigger: 'blur'}, {
+                        type: 'email',
+                        message: '邮箱格式不正确',
+                        trigger: "blur"
+                    }],
+                    phone: [{required: true, message: '请输入电话号码！', trigger: 'blur'}],
+                    address: [{required: true, message: '请输入地址！', trigger: 'blur'}],
+                    departmentId: [{required: true, message: '请输入部门名称！', trigger: 'blur'}],
+                    jobLevelId: [{required: true, message: '请输入职称！', trigger: 'blur'}],
+                    posId: [{required: true, message: '请输入职位！', trigger: 'blur'}],
+                    engageForm: [{required: true, message: '请输入聘用形式！', trigger: 'blur'}],
+                    tiptopDegree: [{required: true, message: '请输入学历！', trigger: 'blur'}],
+                    specialty: [{required: true, message: '请输入专业！', trigger: 'blur'}],
+                    school: [{required: true, message: '请输入毕业院校！', trigger: 'blur'}],
+                    beginDate: [{required: true, message: '请输入入职日期！', trigger: 'blur'}],
+                    workState: [{required: true, message: '请输入工作状态！', trigger: 'blur'}],
+                    workID: [{required: true, message: '请输入工号！', trigger: 'blur'}],
+                    contractTerm: [{required: true, message: '请输入合同期限！', trigger: 'blur'}],
+                    conversionTime: [{required: true, message: '请输入转正日期！', trigger: 'blur'}],
+                    notWorkDate: [{required: true, message: '请输入离职日期！', trigger: 'blur'}],
+                    beginContract: [{required: true, message: '请输入合同起始日期！', trigger: 'blur'}],
+                    endContract: [{required: true, message: '请输入合同结束日期！', trigger: 'blur'}],
+                    workAge: [{required: true, message: '请输入工龄！', trigger: 'blur'}],
+
                 }
             };
         },
@@ -519,10 +559,14 @@
         },
         methods: {
             doAddEmp() {
-                this.postRequest("/emp/basic/", this.emp).then(resp => {
-                    if (resp) {
-                        this.dialogVisible = false;
-                        this.initEmps();
+                this.$refs['empForm'].valid(valid => {
+                    if (valid) {
+                        this.postRequest("/emp/basic/", this.emp).then(resp => {
+                            if (resp) {
+                                this.dialogVisible = false;
+                                this.initEmps();
+                            }
+                        });
                     }
                 });
             },
