@@ -436,7 +436,7 @@
             </div>
             <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+    <el-button type="primary" @click="doAddEmp">确 定</el-button>
   </span>
         </el-dialog>
     </div>
@@ -518,6 +518,14 @@
             this.initData();
         },
         methods: {
+            doAddEmp() {
+                this.postRequest("/emp/basic/", this.emp).then(resp => {
+                    if (resp) {
+                        this.dialogVisible = false;
+                        this.initEmps();
+                    }
+                });
+            },
             handleNodeClick(data) {
                 this.popVisible = !this.popVisible;
                 this.inputDepName = data.name;
