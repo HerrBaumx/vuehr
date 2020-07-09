@@ -233,10 +233,10 @@
                             <el-form-item label="政治面貌:" prop="politicId">
                                 <el-select v-model="emp.politicId" placeholder="政治面貌" size="mini" style="width: 200px">
                                     <el-option
-                                            v-for="item in options"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
+                                            v-for="item in politicsstatus"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -248,10 +248,10 @@
                             <el-form-item label="民族:" prop="nationId">
                                 <el-select v-model="emp.nationId" placeholder="民族" size="mini" style="width: 150px">
                                     <el-option
-                                            v-for="item in options"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
+                                            v-for="item in nations"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -282,10 +282,10 @@
                             <el-form-item label="职位:" prop="posId">
                                 <el-select v-model="emp.posId" placeholder="职位" size="mini" style="width: 150px">
                                     <el-option
-                                            v-for="item in options"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
+                                            v-for="item in positions"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -294,10 +294,10 @@
                             <el-form-item label="职称:" prop="jobLevelId">
                                 <el-select v-model="emp.jobLevelId" placeholder="职称" size="mini" style="width: 150px">
                                     <el-option
-                                            v-for="item in options"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
+                                            v-for="item in joblevels"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -326,10 +326,10 @@
                             <el-form-item label="学历:" prop="tiptopDegree">
                                 <el-select v-model="emp.tiptopDegree" placeholder="学历" size="mini" style="width: 150px">
                                     <el-option
-                                            v-for="item in options"
-                                            :key="item.value"
-                                            :label="item.label"
-                                            :value="item.value">
+                                            v-for="item in tiptopDegree"
+                                            :key="item"
+                                            :label="item"
+                                            :value="item">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -444,6 +444,11 @@
                 total: 0,
                 page: 1,
                 size: 10,
+                nations: [],
+                joblevels: [],
+                politicsstatus: [],
+                positions: [],
+                tiptopDegree: ['本科','大专','硕士','博士','高中',' 初中','小学','其他'],
                 emp: {
                     name: "一点雨",
                     gender: "男",
@@ -493,9 +498,41 @@
         },
         mounted() {
             this.initEmps();
+            this.initData();
         },
         methods: {
+            initPOsitions() {
+                this.getRequest("/emp/basic/positions").then(resp => {
+                    if (resp) {
+                        this.positions = resp;
+                    }
+                });
+            },
+            initData() {
+                if (!window.sessionStorage.getItem("nations")) {
+                    this.getRequest("/emp/basic/nations").then(resp => {
+                        if (resp) {
+                            this.nations = resp;
+                        }
+                    });
+                }
+            if (!window.sessionStorage.getItem("joblevels")) {
+                    this.getRequest("/emp/basic/joblevels").then(resp => {
+                        if (resp) {
+                            this.joblevels = resp;
+                        }
+                    });
+                }
+            if (!window.sessionStorage.getItem("politicsstatus")) {
+                    this.getRequest("/emp/basic/politicsstatus").then(resp => {
+                        if (resp) {
+                            this.politicsstatus = resp;
+                        }
+                    });
+                }
+            },
             showAddEmpView() {
+                this.initPOsitions();
                 this.dialogVisible = true;
             },
             sizeChange(currentSize) {
