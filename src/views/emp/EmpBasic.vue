@@ -319,7 +319,7 @@
                         <el-col :span="6">
                             <el-form-item label="工号:" prop="workID">
                                 <el-input size="mini" style="width: 150px" prefix-icon="el-icon-edit"
-                                          placeholder="工号" v-model="emp.workID"></el-input>
+                                          placeholder="工号" v-model="emp.workID" disabled></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col :span="5">
@@ -501,6 +501,13 @@
             this.initData();
         },
         methods: {
+            getMaxWorkID() {
+                this.getRequest("/emp/basic/maxWorkID").then(resp => {
+                    if (resp) {
+                        this.emp.workID = resp.obj;
+                    }
+                });
+            },
             initPOsitions() {
                 this.getRequest("/emp/basic/positions").then(resp => {
                     if (resp) {
@@ -532,6 +539,7 @@
                 }
             },
             showAddEmpView() {
+                this.getMaxWorkID();
                 this.initPOsitions();
                 this.dialogVisible = true;
             },
