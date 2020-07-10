@@ -177,9 +177,10 @@
                         width="200"
                         label="操作">
                     <template slot-scope="scope">
-                        <el-button style="padding: 3px" size="mini">编辑</el-button>
+                        <el-button style="padding: 3px" size="mini" @click="showEditEmpView(scope.row)">编辑</el-button>
                         <el-button style="padding: 3px" size="mini" type="primary">查看高级资料</el-button>
-                        <el-button style="padding: 3px" size="mini" type="danger" @click="deleteEmp(scope.row)">删除</el-button>
+                        <el-button style="padding: 3px" size="mini" type="danger" @click="deleteEmp(scope.row)">删除
+                        </el-button>
                     </template>
                 </el-table-column>
 
@@ -196,7 +197,7 @@
             </div>
         </div>
         <el-dialog
-                title="添加员工"
+                :title="title"
                 :visible.sync="dialogVisible"
                 width="80%">
             <div>
@@ -449,6 +450,7 @@
         name: "EmpBasic",
         data() {
             return {
+                title: '',
                 emps: [],
                 dialogVisible: false,
                 loading: false,
@@ -517,7 +519,7 @@
                     name: [{required: true, message: '请输入用户名！', trigger: 'blur'}],
                     gender: [{required: true, message: '请输入性别！', trigger: 'blur'}],
                     birthday: [{required: true, message: '请输入出生日期！', trigger: 'blur'}],
-                    idCard: [{required: true, message: '请输入身份证号码！', trigger: 'blur'},{
+                    idCard: [{required: true, message: '请输入身份证号码！', trigger: 'blur'}, {
                         pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/,
                         message: '身份证号码格式不正确',
                         trigger: 'blur'
@@ -558,8 +560,47 @@
             this.initData();
         },
         methods: {
+            emptyEmp() {
+                this.emp = {
+                    name: "",
+                    gender: "",
+                    birthday: "",
+                    idCard: "",
+                    wedlock: "",
+                    nationId: 1,
+                    nativePlace: "",
+                    politicId: 13,
+                    email: "",
+                    phone: "",
+                    address: "",
+                    departmentId: null,
+                    jobLevelId: 9,
+                    posId: 29,
+                    engageForm: "",
+                    tiptopDegree: "",
+                    specialty: "",
+                    school: "",
+                    beginDate: "",
+                    workState: "",
+                    workID: "",
+                    contractTerm: 2.0,
+                    conversionTime: "",
+                    notWorkDate: null,
+                    beginContract: "",
+                    endContract: "",
+                    workAge: null
+                };
+                this.inputDepName = '';
+            },
+            showEditEmpView(data) {
+                this.title = '编辑员工信息';
+                this.emp = data;
+                this.initPOsitions();
+                this.inputDepName = data.department.name;
+                this.dialogVisible = true;
+            },
             deleteEmp(data) {
-                this.$confirm('此操作将永久删除【'+data.name+'】, 是否继续?', '提示', {
+                this.$confirm('此操作将永久删除【' + data.name + '】, 是否继续?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -578,16 +619,30 @@
 
             },
             doAddEmp() {
-                this.$refs['empForm'].valid(valid => {
-                    if (valid) {
-                        this.postRequest("/employee/basic/", this.emp).then(resp => {
-                            if (resp) {
-                                this.dialogVisible = false;
-                                this.initEmps();
-                            }
-                        });
-                    }
-                });
+                if (this.emp.id) {
+                    this.$refs['empForm'].validate(valid => {
+                        if (valid) {
+                            this.putRequest("/employee/basic/", this.emp).then(resp => {
+                                if (resp) {
+                                    this.dialogVisible = false;
+                                    this.initEmps();
+                                }
+                            });
+                        }
+                    });
+
+                } else {
+                    this.$refs['empForm'].valid(valid => {
+                        if (valid) {
+                            this.postRequest("/employee/basic/", this.emp).then(resp => {
+                                if (resp) {
+                                    this.dialogVisible = false;
+                                    this.initEmps();
+                                }
+                            });
+                        }
+                    });
+                }
             },
             handleNodeClick(data) {
                 this.popVisible = !this.popVisible;
@@ -655,6 +710,8 @@
                 }
             },
             showAddEmpView() {
+                this.emptyEmp();
+                this.title = '添加员工';
                 this.getMaxWorkID();
                 this.initPOsitions();
                 this.dialogVisible = true;
