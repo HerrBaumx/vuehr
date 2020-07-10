@@ -581,9 +581,8 @@
                     specialty: "",
                     school: "",
                     beginDate: "",
-                    workState: "",
                     workID: "",
-                    contractTerm: 2.0,
+                    contractTerm: "2",
                     conversionTime: "",
                     notWorkDate: null,
                     beginContract: "",
@@ -632,7 +631,7 @@
                     });
 
                 } else {
-                    this.$refs['empForm'].valid(valid => {
+                    this.$refs['empForm'].validate(valid => {
                         if (valid) {
                             this.postRequest("/employee/basic/", this.emp).then(resp => {
                                 if (resp) {
