@@ -179,7 +179,7 @@
                     <template slot-scope="scope">
                         <el-button style="padding: 3px" size="mini">编辑</el-button>
                         <el-button style="padding: 3px" size="mini" type="primary">查看高级资料</el-button>
-                        <el-button style="padding: 3px" size="mini" type="danger">删除</el-button>
+                        <el-button style="padding: 3px" size="mini" type="danger" @click="deleteEmp(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
 
@@ -558,10 +558,29 @@
             this.initData();
         },
         methods: {
+            deleteEmp(data) {
+                this.$confirm('此操作将永久删除【'+data.name+'】, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.deleteRequest("/employee/basic/" + data.id).then(resp => {
+                        if (resp) {
+                            this.initEmps();
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+            },
             doAddEmp() {
                 this.$refs['empForm'].valid(valid => {
                     if (valid) {
-                        this.postRequest("/emp/basic/", this.emp).then(resp => {
+                        this.postRequest("/employee/basic/", this.emp).then(resp => {
                             if (resp) {
                                 this.dialogVisible = false;
                                 this.initEmps();
@@ -580,14 +599,14 @@
                 this.popVisible = !this.popVisible;
             },
             getMaxWorkID() {
-                this.getRequest("/emp/basic/maxWorkID").then(resp => {
+                this.getRequest("/employee/basic/maxWorkID").then(resp => {
                     if (resp) {
                         this.emp.workID = resp.obj;
                     }
                 });
             },
             initPOsitions() {
-                this.getRequest("/emp/basic/positions").then(resp => {
+                this.getRequest("/employee/basic/positions").then(resp => {
                     if (resp) {
                         this.positions = resp;
                     }
@@ -595,7 +614,7 @@
             },
             initData() {
                 if (!window.sessionStorage.getItem("nations")) {
-                    this.getRequest("/emp/basic/nations").then(resp => {
+                    this.getRequest("/employee/basic/nations").then(resp => {
                         if (resp) {
                             this.nations = resp;
                             window.sessionStorage.setItem("nations", JSON.stringify(resp));
@@ -605,7 +624,7 @@
                     this.nations = JSON.parse(window.sessionStorage.getItem("nations"));
                 }
                 if (!window.sessionStorage.getItem("joblevels")) {
-                    this.getRequest("/emp/basic/joblevels").then(resp => {
+                    this.getRequest("/employee/basic/joblevels").then(resp => {
                         if (resp) {
                             this.joblevels = resp;
                             window.sessionStorage.setItem("joblevels", JSON.stringify(resp));
@@ -615,7 +634,7 @@
                     this.joblevels = JSON.parse(window.sessionStorage.getItem("joblevels"));
                 }
                 if (!window.sessionStorage.getItem("politicsstatus")) {
-                    this.getRequest("/emp/basic/politicsstatus").then(resp => {
+                    this.getRequest("/employee/basic/politicsstatus").then(resp => {
                         if (resp) {
                             this.politicsstatus = resp;
                             window.sessionStorage.setItem("politicsstatus", JSON.stringify(resp));
@@ -625,7 +644,7 @@
                     this.politicsstatus = JSON.parse(window.sessionStorage.getItem("politicsstatus"));
                 }
                 if (!window.sessionStorage.getItem("deps")) {
-                    this.getRequest("/emp/basic/deps").then(resp => {
+                    this.getRequest("/employee/basic/deps").then(resp => {
                         if (resp) {
                             this.allDeps = resp;
                             window.sessionStorage.setItem("deps", JSON.stringify(resp));
@@ -652,7 +671,7 @@
             },
             initEmps() {
                 this.loading = true;
-                this.getRequest("/emp/basic/?page=" + this.page + "&size=" + this.size + "&keyword=" + this.keyword).then(resp => {
+                this.getRequest("/employee/basic/?page=" + this.page + "&size=" + this.size + "&keyword=" + this.keyword).then(resp => {
                     this.loading = false;
 
                     if (resp) {
