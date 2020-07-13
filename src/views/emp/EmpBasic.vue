@@ -21,8 +21,8 @@
                     <i class="fa fa-level-up" aria-hidden="true"></i>
                     导入数据
                 </el-button>
-                <el-button type="success">
-                    <i class="fa fa-level-down" aria-hidden="true"></i>
+                <el-button type="success" @click="exportData">
+                    <i class="fa fa-level-down" aria-hidden="true" ></i>
                     导出数据
                 </el-button>
                 <el-button type="primary" icon="el-icon-plus" @click="showAddEmpView">
@@ -136,6 +136,24 @@
                         label="聘用形式">
                 </el-table-column>
                 <el-table-column
+                        prop="tiptopDegree"
+                        width="80"
+                        align="left"
+                        label="最高学历">
+                </el-table-column>
+                <el-table-column
+                        prop="specialty"
+                        width="150"
+                        align="left"
+                        label="专业">
+                </el-table-column>
+                <el-table-column
+                        prop="school"
+                        width="150"
+                        align="left"
+                        label="毕业院校">
+                </el-table-column>
+                <el-table-column
                         prop="beginDate"
                         width="95"
                         align="left"
@@ -167,10 +185,6 @@
                         <el-tag>{{scope.row.contractTerm}}</el-tag>
                         年
                     </template>
-                </el-table-column>
-                <el-table-column
-                        prop="tiptopDegree"
-                        label="最高学历">
                 </el-table-column>
                 <el-table-column
                         fixed="right"
@@ -560,6 +574,9 @@
             this.initData();
         },
         methods: {
+            exportData() {
+                window.open('/employee/basic/export','_parent')
+            },
             emptyEmp() {
                 this.emp = {
                     name: "",
