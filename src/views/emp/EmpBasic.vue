@@ -1,39 +1,132 @@
 <template>
     <div>
-        <div style="display: flex;justify-content: space-between">
-            <div>
-                <el-input placeholder="请输入员工姓名进行搜索，可以直接回车搜素..."
-                          v-model="keyword" prefix-icon="el-icon-search"
-                          style="width: 300px;margin-right: 10px"
-                          clearable
-                          @clear="initEmps"
-                          @keydown.enter.native="initEmps"></el-input>
-                <el-button icon="el-icon-search" type="primary" @click="initEmps">搜素</el-button>
-                <el-button type="primary">
-                    <i class="fa fa-angle-double-down" aria-hidden="true"></i>
-                    高级搜素
-                </el-button>
+        <div>
 
+            <div style="display: flex;justify-content: space-between">
+                <div>
+                    <el-input placeholder="请输入员工姓名进行搜索，可以直接回车搜素..."
+                              v-model="keyword" prefix-icon="el-icon-search"
+                              style="width: 300px;margin-right: 10px"
+                              clearable
+                              @clear="initEmps"
+                              @keydown.enter.native="initEmps"></el-input>
+                    <el-button icon="el-icon-search" type="primary" @click="initEmps">搜素</el-button>
+                    <el-button type="primary">
+                        <i class="fa fa-angle-double-down" aria-hidden="true"></i>
+                        高级搜素
+                    </el-button>
+
+                </div>
+                <div>
+                    <el-upload
+                            :show-file-list="false"
+                            :before-upload="beforeUpload"
+                            :on-success="onSuccess"
+                            :on-error="onError"
+                            :disabled="importDataDisabled"
+                            style="display: inline-flex;margin-right: 8px"
+                            action="/employee/basic/import">
+                        <el-button :disabled="importDataDisabled" type="success" :icon="importDataBtnIcon">
+                            {{importDataBtnText}}
+                        </el-button>
+                    </el-upload>
+                    <el-button type="success" @click="exportData" icon="el-icon-download">
+                        导出数据
+                    </el-button>
+                    <el-button type="primary" icon="el-icon-plus" @click="showAddEmpView">
+                        添加用户
+                    </el-button>
+                </div>
             </div>
-            <div>
-                <el-upload
-                        :show-file-list="false"
-                        :before-upload="beforeUpload"
-                        :on-success="onSuccess"
-                        :on-error="onError"
-                        :disabled="importDataDisabled"
-                        style="display: inline-flex;margin-right: 8px"
-                        action="/employee/basic/import">
-                <el-button :disabled="importDataDisabled" type="success" :icon="importDataBtnIcon">
-                    {{importDataBtnText}}
-                </el-button>
-                </el-upload>
-                <el-button type="success" @click="exportData" icon="el-icon-download">
-                    导出数据
-                </el-button>
-                <el-button type="primary" icon="el-icon-plus" @click="showAddEmpView">
-                    添加用户
-                </el-button>
+            <div style="border: 1px solid #409eff;border-radius: 5px;
+            box-sizing: border-box;padding: 5px 0px;margin: 10px 0px">
+
+                <el-row style="margin-left: 5px">
+                    <el-col :span="5">
+                        政治面貌:
+                        <el-select v-model="emp.politicId" placeholder="政治面貌" size="mini" style="width: 150px">
+                            <el-option
+                                    v-for="item in politicsstatus"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="4">
+                        民族:
+                        <el-select v-model="emp.nationId" placeholder="民族" size="mini" style="width: 150px">
+                            <el-option
+                                    v-for="item in nations"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="4">
+                        职位:
+                        <el-select v-model="emp.posId" placeholder="职位" size="mini" style="width: 150px">
+                            <el-option
+                                    v-for="item in positions"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="4">
+                        职称:
+                        <el-select v-model="emp.jobLevelId" placeholder="职称" size="mini" style="width: 150px">
+                            <el-option
+                                    v-for="item in joblevels"
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-col>
+                    <el-col :span="7">
+                        聘用形式:
+                        <el-radio-group v-model="emp.engageForm">
+                            <el-radio label="劳动合同">劳动合同</el-radio>
+                            <el-radio label="劳务合同">劳务合同</el-radio>
+                        </el-radio-group>
+                    </el-col>
+                </el-row>
+                <el-row style="margin-top: 10px;margin-left: 5px">
+                    <el-col :span="5">
+                        所属部门:
+                        <el-popover
+                                placement="right"
+                                title="请选择部门"
+                                width="200"
+                                trigger="manual"
+                                v-model="popVisible">
+                            <el-tree default-expand-all :data="allDeps" :props="defaultProps"
+                                     @node-click="handleNodeClick"></el-tree>
+                            <div slot="reference" style="width: 150px;display: inline-flex;font-size: 13px;border: 1px solid #dedede;
+                                height: 26px;border-radius: 5px;cursor: pointer;align-items: center; padding-left: 8px;box-sizing: border-box"
+                                 @click="showDepView">所属部门
+                            </div>
+                        </el-popover>
+                    </el-col>
+                    <el-col :span="10">
+                        入职日期:
+                        <el-date-picker
+                                v-model="value1"
+                                type="daterange"
+                                size="mini"
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期">
+                        </el-date-picker>
+                    </el-col>
+                    <el-col :span="5" :offset="4">
+                        <el-button size="mini">取消</el-button>
+                        <el-button size="mini" type="primary" icon="el-icon-search">搜素</el-button>
+                    </el-col>
+                </el-row>
             </div>
         </div>
         <div style="margin-top: 10px">
@@ -438,7 +531,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col :span="8">
-                            <el-form-item label="合同:" prop="engageForm">
+                            <el-form-item label="聘用形式" prop="engageForm">
                                 <el-radio-group v-model="emp.engageForm">
                                     <el-radio label="劳动合同">劳动合同</el-radio>
                                     <el-radio label="劳务合同">劳务合同</el-radio>
@@ -581,6 +674,7 @@
         mounted() {
             this.initEmps();
             this.initData();
+            this.initPOsitions();
         },
         methods: {
             beforeUpload() {
@@ -600,7 +694,7 @@
                 this.importDataDisabled = false;
             },
             exportData() {
-                window.open('/employee/basic/export','_parent')
+                window.open('/employee/basic/export', '_parent')
             },
             emptyEmp() {
                 this.emp = {
@@ -754,7 +848,6 @@
                 this.emptyEmp();
                 this.title = '添加员工';
                 this.getMaxWorkID();
-                this.initPOsitions();
                 this.dialogVisible = true;
             },
             sizeChange(currentSize) {
