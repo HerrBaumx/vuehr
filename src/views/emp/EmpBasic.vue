@@ -9,8 +9,9 @@
                               style="width: 300px;margin-right: 10px"
                               clearable
                               @clear="initEmps"
+                              :disabled="showAdvanceSearchView"
                               @keydown.enter.native="initEmps"></el-input>
-                    <el-button icon="el-icon-search" type="primary" @click="initEmps">搜素</el-button>
+                    <el-button icon="el-icon-search" type="primary" @click="initEmps" :disabled="showAdvanceSearchView">搜素</el-button>
                     <el-button type="primary" @click="showAdvanceSearchView=!showAdvanceSearchView">
                         <i :class="showAdvanceSearchView?'fa fa-angle-double-up':'fa fa-angle-double-down'"
                            aria-hidden="true"></i>
