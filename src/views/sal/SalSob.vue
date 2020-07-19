@@ -41,7 +41,7 @@
                     <el-steps direction="vertical" :active="activeItemIndex">
                         <el-step :title="itemName" v-for="(itemName,index) in salaryItemName" :key="index"></el-step>
                     </el-steps>
-                    <el-input :placeholder="'请输入'+itemName+'...'" v-for="(itemName,index) in salaryItemName"
+                    <el-input v-model="salary[index]" :placeholder="'请输入'+salaryItemName[index]+'...'" v-for="(value,title,index) in salary"
                               :key="index" v-show="activeItemIndex==index" style="width: 200px"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer ">
@@ -72,6 +72,18 @@
                     '公积金比率',
                     '公积金基数'
                 ],
+                salary: {
+                    basicSalary: 0,
+                    trafficSalary: 0,
+                    lunchSalary: 0,
+                    bonus: 0,
+                    pensionPer: 0,
+                    pensionBase: 0,
+                    medicalPer: 0,
+                    medicalBase: 0,
+                    accumulationFundPer: 0,
+                    accumulationFundBase: 0
+                },
                 dialogVisible: false
             };
         },
@@ -82,7 +94,7 @@
             preStep() {
                 if (this.activeItemIndex == 0) {
                     return;
-                }else if (this.activeItemIndex == 9) {
+                } else if (this.activeItemIndex == 9) {
                     this.activeItemIndex = 0;
                     this.dialogVisible = false;
                     return;
@@ -92,7 +104,7 @@
             },
             nextStep() {
                 if (this.activeItemIndex == 9) {
-                    alert('ok');
+                    console.log(this.salary);
                     return;
                 }
                 this.activeItemIndex++;
