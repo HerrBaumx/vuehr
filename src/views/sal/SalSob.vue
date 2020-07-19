@@ -41,12 +41,13 @@
                     <el-steps direction="vertical" :active="activeItemIndex">
                         <el-step :title="itemName" v-for="(itemName,index) in salaryItemName" :key="index"></el-step>
                     </el-steps>
-                    <el-input v-model="salary[index]" :placeholder="'请输入'+salaryItemName[index]+'...'" v-for="(value,title,index) in salary"
+                    <el-input v-model="salary[title]" :placeholder="'请输入'+salaryItemName[index]+'...'"
+                              v-for="(value,title,index) in salary"
                               :key="index" v-show="activeItemIndex==index" style="width: 200px"></el-input>
                 </div>
                 <span slot="footer" class="dialog-footer ">
-    <el-button @click="preStep">{{activeItemIndex==9?'取消':'上一步'}}</el-button>
-    <el-button type="primary" @click="nextStep">{{activeItemIndex==9?'完成':'下一步'}}</el-button>
+    <el-button @click="preStep">{{activeItemIndex==10?'取消':'上一步'}}</el-button>
+    <el-button type="primary" @click="nextStep">{{activeItemIndex==10?'完成':'下一步'}}</el-button>
   </span>
             </el-dialog>
         </div>
@@ -70,7 +71,8 @@
                     '医疗保险比率',
                     '医疗保险基数',
                     '公积金比率',
-                    '公积金基数'
+                    '公积金基数',
+                    '账套名称'
                 ],
                 salary: {
                     basicSalary: 0,
@@ -82,7 +84,8 @@
                     medicalPer: 0,
                     medicalBase: 0,
                     accumulationFundPer: 0,
-                    accumulationFundBase: 0
+                    accumulationFundBase: 0,
+                    name: ''
                 },
                 dialogVisible: false
             };
@@ -94,8 +97,21 @@
             preStep() {
                 if (this.activeItemIndex == 0) {
                     return;
-                } else if (this.activeItemIndex == 9) {
+                } else if (this.activeItemIndex == 10) {
                     this.activeItemIndex = 0;
+                    this.salary = {
+                        basicSalary: 0,
+                        trafficSalary: 0,
+                        lunchSalary: 0,
+                        bonus: 0,
+                        pensionPer: 0,
+                        pensionBase: 0,
+                        medicalPer: 0,
+                        medicalBase: 0,
+                        accumulationFundPer: 0,
+                        accumulationFundBase: 0,
+                        name: ''
+                    }
                     this.dialogVisible = false;
                     return;
 
@@ -103,8 +119,13 @@
                 this.activeItemIndex--;
             },
             nextStep() {
-                if (this.activeItemIndex == 9) {
-                    console.log(this.salary);
+                if (this.activeItemIndex == 10) {
+                    this.postRequest("/salary/sob/", this.salary).then(resp => {
+                        if (resp) {
+                            this.dialogVisible = false;
+                            this.initSalaries();
+                        }
+                    });
                     return;
                 }
                 this.activeItemIndex++;
