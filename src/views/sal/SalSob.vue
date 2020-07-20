@@ -26,9 +26,9 @@
                     <el-table-column width="70px" prop="accumulationFundBase" label="基数"></el-table-column>
                 </el-table-column>
                 <el-table-column label="操作">
-                    <template>
+                    <template slot-scope="scope">
                         <el-button>编辑</el-button>
-                        <el-button type="danger">删除</el-button>
+                        <el-button type="danger" @click="deleteSalary(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -94,6 +94,26 @@
             this.initSalaries();
         },
         methods: {
+            deleteSalary(data) {
+                this.$confirm('此操作将永久删除【' + data.name + '】, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.deleteRequest("/salary/sob/" + data.id).then(resp => {
+                        if (resp) {
+                            this.initSalaries();
+                        }
+
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+            },
             preStep() {
                 if (this.activeItemIndex == 0) {
                     return;
