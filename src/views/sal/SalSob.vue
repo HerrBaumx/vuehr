@@ -2,7 +2,7 @@
     <div>
         <div style="display: flex;justify-content: space-between">
             <el-button icon="el-icon-plus" type="primary" @click="showAddSalaryView">添加工资账套</el-button>
-            <el-button icon="el-icon-refresh" type="success"></el-button>
+            <el-button icon="el-icon-refresh" type="success" @click="initSalaries"></el-button>
         </div>
         <div style="margin-top: 10px">
             <el-table :data="salaries" border stripe>
@@ -27,14 +27,14 @@
                 </el-table-column>
                 <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button>编辑</el-button>
+                        <el-button @click="showEditSalaryView(scope.row)">编辑</el-button>
                         <el-button type="danger" @click="deleteSalary(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
 
             <el-dialog
-                    title="添加工资账套"
+                    :title="dialogTitle"
                     :visible.sync="dialogVisible"
                     width="50%">
                 <div style="display: flex;justify-content: space-around;align-items: center">
@@ -60,6 +60,7 @@
         data() {
             return {
                 salaries: [],
+                dialogTitle: '添加工资账套',
                 activeItemIndex: 0,
                 salaryItemName: [
                     '基本工资',
@@ -118,20 +119,6 @@
                 if (this.activeItemIndex == 0) {
                     return;
                 } else if (this.activeItemIndex == 10) {
-                    this.activeItemIndex = 0;
-                    this.salary = {
-                        basicSalary: 0,
-                        trafficSalary: 0,
-                        lunchSalary: 0,
-                        bonus: 0,
-                        pensionPer: 0,
-                        pensionBase: 0,
-                        medicalPer: 0,
-                        medicalBase: 0,
-                        accumulationFundPer: 0,
-                        accumulationFundBase: 0,
-                        name: ''
-                    }
                     this.dialogVisible = false;
                     return;
 
@@ -140,17 +127,62 @@
             },
             nextStep() {
                 if (this.activeItemIndex == 10) {
-                    this.postRequest("/salary/sob/", this.salary).then(resp => {
-                        if (resp) {
-                            this.dialogVisible = false;
-                            this.initSalaries();
-                        }
-                    });
+
+                    if (this.salary.id) {
+                        this.putRequest("/salary/sob/", this.salary).then(resp => {
+                            if (resp) {
+                                this.dialogVisible = false;
+                                this.initSalaries();
+                            }
+                        });
+
+                    } else {
+
+
+                        this.postRequest("/salary/sob/", this.salary).then(resp => {
+                            if (resp) {
+                                this.dialogVisible = false;
+                                this.initSalaries();
+                            }
+                        });
+                    }
                     return;
                 }
                 this.activeItemIndex++;
             },
+            showEditSalaryView(data) {
+                this.activeItemIndex = 0;
+                this.dialogTitle = '修改工资账套';
+                this.dialogVisible = true;
+                this.salary.basicSalary = data.basicSalary;
+                this.salary.trafficSalary = data.trafficSalary;
+                this.salary.lunchSalary = data.lunchSalary;
+                this.salary.bonus = data.bonus;
+                this.salary.pensionPer = data.pensionPer;
+                this.salary.pensionBase = data.pensionBase;
+                this.salary.medicalPer = data.medicalPer;
+                this.salary.medicalBase = data.medicalBase;
+                this.salary.accumulationFundPer = data.accumulationFundPer;
+                this.salary.accumulationFundBase = data.accumulationFundBase;
+                this.salary.name = data.name;
+                this.salary.id = data.id;
+            },
             showAddSalaryView() {
+                this.activeItemIndex = 0;
+                this.salary = {
+                    basicSalary: 0,
+                    trafficSalary: 0,
+                    lunchSalary: 0,
+                    bonus: 0,
+                    pensionPer: 0,
+                    pensionBase: 0,
+                    medicalPer: 0,
+                    medicalBase: 0,
+                    accumulationFundPer: 0,
+                    accumulationFundBase: 0,
+                    name: ''
+                }
+                this.dialogTitle = '添加工资账套';
                 this.dialogVisible = true;
             },
             initSalaries() {
