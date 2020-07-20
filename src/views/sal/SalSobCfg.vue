@@ -66,7 +66,24 @@
                 </el-table-column>
                 <el-table-column label="操作" align="center" width="180px">
                     <template slot-scope="scope">
-                        <el-button type="danger">修改工资账套</el-button>
+                        <el-popover
+                                placement="left"
+                                title="修改工资账套"
+                                width="200"
+                                @show="showPop(scope.row.salary)"
+                                trigger="click">
+                            <div>
+                                <el-select v-model="currentSalary" placeholder="请选择" size="mini">
+                                    <el-option
+                                            v-for="item in salaries"
+                                            :key="item.id"
+                                            :label="item.name"
+                                            :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </div>
+                            <el-button slot="reference" type="danger">修改工资账套</el-button>
+                        </el-popover>
                     </template>
                 </el-table-column>
             </el-table>
@@ -79,13 +96,26 @@
         name: "SalSobCfg",
         data() {
             return {
-                emps: []
+                currentSalary: -1,
+                emps: [],
+                salaries: []
             };
         },
         mounted() {
             this.initEmps();
+            this.initSalaries();
         },
         methods: {
+            showPop(data) {
+                this.currentSalary = data.id;
+            },
+            initSalaries() {
+                this.getRequest("/salary/sobcfg/salaries").then(resp => {
+                    if (resp) {
+                        this.salaries = resp;
+                    }
+                });
+            },
             initEmps() {
                 this.getRequest("/salary/sobcfg/").then(resp => {
                     if (resp) {
