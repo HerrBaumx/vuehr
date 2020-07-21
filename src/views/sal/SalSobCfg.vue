@@ -106,7 +106,7 @@
         name: "SalSobCfg",
         data() {
             return {
-                currentSalary: -1,
+                currentSalary: null,
                 total: 0,
                 currentPage: 1,
                 currentSize: 10,
@@ -128,15 +128,23 @@
                 this, this.initEmps();
             },
             hidePop(data) {
-                this.putRequest("/salary/sobcfg/?eid=" + data.id + '&sid=' + this.currentSalary).then(resp => {
-                    if (resp) {
-                        this.initEmps();
-                    }
-                });
+                if (this.currentSalary) {
+
+                    this.putRequest("/salary/sobcfg/?eid=" + data.id + '&sid=' + this.currentSalary).then(resp => {
+                        if (resp) {
+                            this.initEmps();
+                        }
+                    });
+                }
 
             },
             showPop(data) {
-                this.currentSalary = data.id;
+                if (data) {
+                    this.currentSalary = data.id;
+                } else {
+                    this.currentSalary = null;
+                }
+
             },
             initSalaries() {
                 this.getRequest("/salary/sobcfg/salaries").then(resp => {
