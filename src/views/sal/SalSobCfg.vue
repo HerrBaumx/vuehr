@@ -61,7 +61,7 @@
                             </div>
                             <el-tag>{{scope.row.salary.name}}</el-tag>
                         </el-tooltip>
-
+                        <el-tag v-else>暂未设置</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" align="center" width="180px">
@@ -88,6 +88,15 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <div style="display: flex;justify-content: flex-end">
+                <el-pagination
+                        background
+                        @size-change="sizeChange"
+                        @current-change="currentChange"
+                        layout="sizes, prev, pager, next, jumper, ->, total, slot"
+                        :total="total">
+                </el-pagination>
+            </div>
         </div>
     </div>
 </template>
@@ -98,6 +107,9 @@
         data() {
             return {
                 currentSalary: -1,
+                total: 0,
+                currentPage: 1,
+                currentSize: 10,
                 emps: [],
                 salaries: []
             };
@@ -107,6 +119,14 @@
             this.initSalaries();
         },
         methods: {
+            currentChange(page) {
+                this.currentPage = page;
+                this.initEmps();
+            },
+            sizeChange(size) {
+                this.currentSize = size;
+                this, this.initEmps();
+            },
             hidePop(data) {
                 this.putRequest("/salary/sobcfg/?eid=" + data.id + '&sid=' + this.currentSalary).then(resp => {
                     if (resp) {
@@ -126,9 +146,10 @@
                 });
             },
             initEmps() {
-                this.getRequest("/salary/sobcfg/").then(resp => {
+                this.getRequest("/salary/sobcfg/?page=" + this.currentPage + '&size=' + this.currentSize).then(resp => {
                     if (resp) {
                         this.emps = resp.data;
+                        this.total = resp.total;
                     }
                 });
             }
