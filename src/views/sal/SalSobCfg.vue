@@ -71,6 +71,7 @@
                                 title="修改工资账套"
                                 width="200"
                                 @show="showPop(scope.row.salary)"
+                                @hide="hidePop(scope.row)"
                                 trigger="click">
                             <div>
                                 <el-select v-model="currentSalary" placeholder="请选择" size="mini">
@@ -106,6 +107,14 @@
             this.initSalaries();
         },
         methods: {
+            hidePop(data) {
+                this.putRequest("/salary/sobcfg/?eid=" + data.id + '&sid=' + this.currentSalary).then(resp => {
+                    if (resp) {
+                        this.initEmps();
+                    }
+                });
+
+            },
             showPop(data) {
                 this.currentSalary = data.id;
             },
