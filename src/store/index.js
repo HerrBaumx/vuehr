@@ -12,7 +12,8 @@ const store = new Vuex.Store({
         sessions: [],
         hrs: [],
         currentSessionId: -1,
-        filterKey: ''
+        filterKey: '',
+        stomp: null
     },
     mutations: {
         initRoutes(state, data) {
@@ -41,6 +42,16 @@ const store = new Vuex.Store({
         }
     },
     actions: {
+        connect(context) {
+            context.state.stomp = Stomp.over(new SockJS('/ws/ep'));
+            context.state.stomp.connect({}, success => {
+                context.state.stomp.subscribe('user/queue/chat', msg => {
+                    console.log(msg.body);
+                });
+            }, error => {
+
+            });
+        },
         initData(context) {
             context.commit('INIT_DATA')
             getRequest("/chat/hrs").then(resp => {
