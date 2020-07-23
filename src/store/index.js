@@ -17,13 +17,15 @@ const store = new Vuex.Store({
         currentSession: null,
         currentHr: JSON.parse(window.sessionStorage.getItem("user")),
         filterKey: '',
-        stomp: null
+        stomp: null,
+        isDot: {}
     },
     mutations: {
         initRoutes(state, data) {
             state.routes = data;
         },
         changeCurrentSession(state, currentSession) {
+            Vue.set(state.isDot, state.currentHr.username + '#' + currentSession.username, false);
             state.currentSession = currentSession;
         },
         addMessage(state, msg) {
@@ -68,6 +70,7 @@ const store = new Vuex.Store({
                             message: receiveMsg.content.length > 10 ? receiveMsg.content.substring(0, 10) : receiveMsg.content,
                             position: 'bottom-right'
                         });
+                        Vue.set(context.state.isDot, context.state.currentHr.username + '#' + receiveMsg.from, true);
                     }
 
                     receiveMsg.notSelf = true;
