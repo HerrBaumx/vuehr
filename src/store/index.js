@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import {getRequest} from '../utils/api'
-
+import {Notification} from 'element-ui';
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
 
@@ -39,7 +39,7 @@ const store = new Vuex.Store({
                 self: !msg.notSelf
             })
         },
-        INIT_CURRENTHR(state,hr) {
+        INIT_CURRENTHR(state, hr) {
             state.currentHr = hr;
         },
         INIT_DATA(state) {
@@ -61,6 +61,15 @@ const store = new Vuex.Store({
             context.state.stomp.connect({}, success => {
                 context.state.stomp.subscribe('/user/queue/chat', msg => {
                     let receiveMsg = JSON.parse(msg.body);
+
+                    if (!context.state.currentSession || receiveMsg.from != context.state.currentSession.usernname) {
+                        Notification.info({
+                            title: '【' + receiveMsg.fromNickname + '】发来一条消息',
+                            message: receiveMsg.content.length > 10 ? receiveMsg.content.substring(0, 10) : receiveMsg.content,
+                            position: 'bottom-right'
+                        });
+                    }
+
                     receiveMsg.notSelf = true;
                     receiveMsg.to = receiveMsg.from;
                     context.commit('addMessage', receiveMsg);
