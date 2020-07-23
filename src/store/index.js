@@ -27,12 +27,12 @@ const store = new Vuex.Store({
             state.currentSession = currentSession;
         },
         addMessage(state, msg) {
-            let mss = state.sessions[state.currentHr.name + '#' + msg.to];
+            let mss = state.sessions[state.currentHr.username + '#' + msg.to];
 
             if (!mss) {
-                state.sessions[state.currentHr.name + '#' + msg.to] = [];
+                state.sessions[state.currentHr.username + '#' + msg.to] = [];
             }
-            state.sessions[state.currentHr.name + '#' + msg.to].push({
+            state.sessions[state.currentHr.username + '#' + msg.to].push({
                 content: msg.content,
                 date: new Date(),
                 self: !msg.notSelf
