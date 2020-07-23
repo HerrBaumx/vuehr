@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {getRequest} from "../utils/api";
+import {getRequest} from '../utils/api'
+
+import SockJS from 'sockjs-client'
+import Stomp from 'stompjs'
 
 Vue.use(Vuex)
 
@@ -43,14 +46,16 @@ const store = new Vuex.Store({
     },
     actions: {
         connect(context) {
+
+            console.log('2222222222222' + Stomp.over(new SockJS('/ws/ep')));
             context.state.stomp = Stomp.over(new SockJS('/ws/ep'));
             context.state.stomp.connect({}, success => {
-                context.state.stomp.subscribe('user/queue/chat', msg => {
-                    console.log(msg.body);
-                });
+                context.state.stomp.subscribe('/user/queue/chat', msg => {
+                    console.log('=====>>>>>>>>>>'+msg.body);
+                })
             }, error => {
 
-            });
+            })
         },
         initData(context) {
             context.commit('INIT_DATA')

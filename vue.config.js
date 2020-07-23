@@ -1,8 +1,8 @@
 let proxyObj = {};
 proxyObj['/ws'] = {
     ws: true,
-    target: 'ws://localhost:8081',
-}
+    target: 'ws://localhost:8081'
+};
 proxyObj['/'] = {
     ws: false,
     target: 'http://localhost:8081',
@@ -10,7 +10,7 @@ proxyObj['/'] = {
     pathRewrite: {
         '^/': ''
     }
-}
+};
 
 
 module.exports = {

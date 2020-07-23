@@ -18,12 +18,12 @@ export default {
   	addMessage (e) {
   		if (e.ctrlKey && e.keyCode ===13 && this.content.length) {
           let msgObj = new Object();
-          msgObj.to = 'lisi';
+          msgObj.to = 'libai';
           msgObj.content = this.content;
-          this.$store.state.stomp.send("ws/chat", {}, msgObj);
+          this.$store.state.stomp.send('/ws/chat', {}, JSON.stringify(msgObj));
 
-  			this.$store.commit('addMessage',this.content);
-  			this.content='';
+  			// this.$store.commit('addMessage',this.content);
+  			// this.content='';
   		}
   	}
   }

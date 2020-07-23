@@ -8,7 +8,8 @@ export const initMenu = (router, store) => {
         if (data) {
             let fmtRoutes = formatRoutes(data);
             router.addRoutes(fmtRoutes);
-            store.commit('initRoutes',fmtRoutes)
+            store.commit('initRoutes', fmtRoutes);
+            store.dispatch('connect');
         }
     })
 }
