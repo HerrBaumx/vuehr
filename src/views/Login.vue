@@ -51,7 +51,7 @@
                         this.postKeyValueRequest("/doLogin", this.loginForm).then(resp => {
                             this.loading = false;
                             if (resp) {
-                                // alert(JSON.stringify(resp))
+                                this.$store.commit("INIT_CURRENTHR", resp.obj);
                                 window.sessionStorage.setItem("user", JSON.stringify(resp.obj));
                                 let path = this.$route.query.redirect;
 

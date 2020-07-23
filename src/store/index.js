@@ -39,12 +39,15 @@ const store = new Vuex.Store({
                 self: !msg.notSelf
             })
         },
+        INIT_CURRENTHR(state,hr) {
+            state.currentHr = hr;
+        },
         INIT_DATA(state) {
-            // let data = localStorage.getItem('vue-chat-session');
-            // //console.log(data)
-            // if (data) {
-            //     state.sessions = JSON.parse(data);
-            // }
+            let data = localStorage.getItem('vue-chat-session');
+            //console.log(data)
+            if (data) {
+                state.sessions = JSON.parse(data);
+            }
         },
         INIT_HR(state, data) {
             state.hrs = data;
