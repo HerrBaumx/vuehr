@@ -22,8 +22,8 @@ export default {
           msgObj.content = this.content;
           this.$store.state.stomp.send('/ws/chat', {}, JSON.stringify(msgObj));
 
-  			// this.$store.commit('addMessage',this.content);
-  			// this.content='';
+  			this.$store.commit('addMessage',msgObj);
+  			this.content='';
   		}
   	}
   }

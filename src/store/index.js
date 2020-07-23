@@ -12,9 +12,10 @@ const now = new Date();
 const store = new Vuex.Store({
     state: {
         routes: [],
-        sessions: [],
+        sessions: {},
         hrs: [],
         currentSession: null,
+        currentHr: JSON.parse(window.sessionStorage.getItem("user")),
         filterKey: '',
         stomp: null
     },
@@ -26,10 +27,15 @@ const store = new Vuex.Store({
             state.currentSession = currentSession;
         },
         addMessage(state, msg) {
-            state.sessions[state.currentSession -1].messages.push({
-                content: msg,
+            let mss = state.sessions[state.currentHr.name + '#' + msg.to];
+
+            if (!mss) {
+                state.sessions[state.currentHr.name + '#' + msg.to] = [];
+            }
+            state.sessions[state.currentHr.name + '#' + msg.to].push({
+                content: msg.content,
                 date: new Date(),
-                self: true
+                self: !msg.notSelf
             })
         },
         INIT_DATA(state) {
@@ -50,7 +56,10 @@ const store = new Vuex.Store({
             context.state.stomp = Stomp.over(new SockJS('/ws/ep'));
             context.state.stomp.connect({}, success => {
                 context.state.stomp.subscribe('/user/queue/chat', msg => {
-                    console.log('=====>>>>>>>>>>'+msg.body);
+                    let receiveMsg = JSON.parse(msg.body);
+                    receiveMsg.notSelf = true;
+                    receiveMsg.to = receiveMsg.from;
+                    context.commit('addMessage', receiveMsg);
                 })
             }, error => {
 
