@@ -14,7 +14,7 @@ const store = new Vuex.Store({
         routes: [],
         sessions: [],
         hrs: [],
-        currentSessionId: -1,
+        currentSession: null,
         filterKey: '',
         stomp: null
     },
@@ -22,11 +22,11 @@ const store = new Vuex.Store({
         initRoutes(state, data) {
             state.routes = data;
         },
-        changeCurrentSessionId(state, id) {
-            state.currentSessionId = id;
+        changeCurrentSession(state, currentSession) {
+            state.currentSession = currentSession;
         },
         addMessage(state, msg) {
-            state.sessions[state.currentSessionId - 1].messages.push({
+            state.sessions[state.currentSession -1].messages.push({
                 content: msg,
                 date: new Date(),
                 self: true
@@ -47,7 +47,6 @@ const store = new Vuex.Store({
     actions: {
         connect(context) {
 
-            console.log('2222222222222' + Stomp.over(new SockJS('/ws/ep')));
             context.state.stomp = Stomp.over(new SockJS('/ws/ep'));
             context.state.stomp.connect({}, success => {
                 context.state.stomp.subscribe('/user/queue/chat', msg => {
