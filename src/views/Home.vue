@@ -83,6 +83,8 @@
                             message: '已取消删除'
                         });
                     });
+                }else if (cmd == 'userInfo') {
+                    this.$router.push('/hrinfo');
                 }
 
             }
