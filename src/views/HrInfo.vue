@@ -5,8 +5,14 @@
                 <span>{{hr.name}}</span>
             </div>
             <div style="display: flex;justify-content: center">
-                <img title="点击修改用户头像" :src="hr.userface" style="width: 100px;height: 100px;border-radius: 50px;"
-                     alt=""/>
+                <el-upload
+                        :show-file-list="false"
+                        :on-success="onSuccess"
+                        :data="hr"
+                        action="/hr/userface">
+                    <img title="点击修改用户头像" :src="hr.userface" style="width: 100px;height: 100px;border-radius: 50px;"
+                         alt=""/>
+                </el-upload>
             </div>
             <div>手机号码：
                 <el-tag>{{hr.telephone}}</el-tag>
@@ -33,10 +39,12 @@
                 width="30%">
 
             <div>
-                <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+                <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px"
+                         class="demo-ruleForm">
                     <el-form-item label="请输入旧密码" prop="oldPass">
                         <el-input type="password" v-model="ruleForm.oldPass" autocomplete="off"></el-input>
-                    </el-form-item><el-form-item label="请输入新密码" prop="pass">
+                    </el-form-item>
+                    <el-form-item label="请输入新密码" prop="pass">
                         <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
                     </el-form-item>
                     <el-form-item label="请确认新密码" prop="checkPass">
@@ -130,13 +138,13 @@
                 },
                 rules: {
                     oldPass: [
-                        { validator: validatePass, trigger: 'blur' }
+                        {validator: validatePass, trigger: 'blur'}
                     ],
                     pass: [
-                        { validator: validatePass, trigger: 'blur' }
+                        {validator: validatePass, trigger: 'blur'}
                     ],
                     checkPass: [
-                        { validator: validatePass2, trigger: 'blur' }
+                        {validator: validatePass2, trigger: 'blur'}
                     ],
 
                 },
@@ -150,6 +158,9 @@
             this.initHr();
         },
         methods: {
+            onSuccess() {
+                this.initHr();
+            },
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
